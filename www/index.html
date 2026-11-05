@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sachin Study — Class 12</title>
+<style>
+:root{
+  --bg:#0a0a14;--bg-2:#0f0f1e;--card:#14142a;--card-2:#1a1a35;
+  --border:#2a2a44;--border-2:#3a3a5c;
+  --text:#e8e8f2;--text-dim:#8a8aa8;--text-mid:#b0b0c8;
+  --primary:#8b5cf6;--primary-2:#7c3aed;
+  --done:#10b981;--done-glow:rgba(16,185,129,.35);
+  --doing:#f59e0b;--doing-glow:rgba(245,158,11,.35);
+  --todo:#64748b;--danger:#ef4444;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.5;
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -200px,rgba(139,92,246,.22),transparent),
+    radial-gradient(ellipse 700px 400px at 100% 100%,rgba(16,185,129,.10),transparent),
+    radial-gradient(ellipse 500px 300px at 0% 80%,rgba(245,158,11,.06),transparent),
+    var(--bg);
+}
+#app{max-width:900px;margin:auto;padding:0 14px 60px}
+
+.topbar{
+  position:sticky;top:0;z-index:100;
+  padding:14px 0 12px;
+  background:linear-gradient(180deg,rgba(10,10,20,.95),rgba(10,10,20,.75));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(139,92,246,.2);
+  margin-bottom:14px;
+}
+.topbar-inner{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto;padding:0 14px}
+.back-btn{
+  width:38px;height:38px;border-radius:11px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:18px;cursor:pointer;
+  display:grid;place-items:center;flex-shrink:0;
+  transition:all .2s;
+}
+.back-btn:hover{background:var(--card-2);border-color:var(--primary)}
+.app-title{
+  font-size:17px;font-weight:800;margin:0;line-height:1.2;
+  background:linear-gradient(135deg,#c4b5fd,#a78bfa 40%,#60a5fa 70%,#34d399);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.app-sub{font-size:11px;color:var(--text-dim);margin-top:2px;line-height:1.2}
+
+.hero{text-align:center;padding:20px 0 18px}
+.hero h1{
+  font-size:26px;margin:0 0 6px;font-weight:800;letter-spacing:.3px;
+  background:linear-gradient(135deg,#c4b5fd,#a78bfa 40%,#60a5fa 70%,#34d399);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero p{margin:0;color:var(--text-dim);font-size:13px}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat{
+  padding:14px 12px;background:linear-gradient(135deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:14px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--accent,var(--primary));opacity:.85;
+}
+.stat.total{--accent:#8b5cf6}.stat.done-stat{--accent:#10b981}
+.stat.doing-stat{--accent:#f59e0b}.stat.todo-stat{--accent:#64748b}
+.stat strong{display:block;font-size:26px;font-weight:800;color:var(--accent,#8b5cf6);line-height:1.1}
+.stat span{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;display:block}
+
+.progress-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;margin-bottom:18px;
+}
+.progress{height:10px;background:rgba(0,0,0,.4);border-radius:10px;overflow:hidden}
+#bar,#subbar{
+  height:100%;width:0;
+  background:linear-gradient(90deg,#10b981,#34d399,#60a5fa);
+  border-radius:10px;transition:width .5s ease;
+  box-shadow:0 0 12px rgba(16,185,129,.5);
+}
+.summary{margin:10px 0 0;font-size:13px;color:var(--text-mid);text-align:center;font-weight:500}
+
+.section-title{
+  font-size:13px;color:var(--text-dim);font-weight:600;
+  text-transform:uppercase;letter-spacing:1px;
+  margin:18px 0 10px;padding-left:4px;
+}
+
+.subject-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.subject-card{
+  background:linear-gradient(135deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:16px;
+  padding:16px;cursor:pointer;
+  transition:all .22s;position:relative;overflow:hidden;
+  text-align:left;color:inherit;font:inherit;width:100%;
+}
+.subject-card:hover{
+  border-color:var(--primary);transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(139,92,246,.15);
+}
+.subject-card::after{
+  content:'›';position:absolute;right:16px;top:50%;
+  transform:translateY(-50%);font-size:28px;color:var(--text-dim);
+  transition:transform .2s;
+}
+.subject-card:hover::after{color:var(--primary);transform:translateY(-50%) translateX(3px)}
+.subj-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.subj-icon{
+  width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+  font-size:20px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);
+}
+.subj-name{font-size:15px;font-weight:700;line-height:1.3}
+.subj-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
+.subj-progress{
+  height:6px;background:rgba(0,0,0,.35);border-radius:6px;overflow:hidden;
+  margin-top:8px;
+}
+.subj-progress-bar{
+  height:100%;background:linear-gradient(90deg,#10b981,#34d399);
+  border-radius:6px;transition:width .5s;
+}
+.subj-stats{
+  display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--text-mid);
+  flex-wrap:wrap;
+}
+.subj-stats b{color:var(--text);font-weight:700}
+.subj-stats .c-done b{color:var(--done)}
+.subj-stats .c-doing b{color:var(--doing)}
+
+.book{
+  margin-bottom:14px;background:var(--card);
+  border:1px solid var(--border);border-radius:14px;overflow:hidden;
+}
+.bookhead{
+  padding:13px 15px;
+  background:linear-gradient(135deg,var(--card-2),rgba(139,92,246,.08));
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.bookhead-info{flex:1;min-width:0}
+.bookhead-title{font-weight:700;font-size:13.5px;line-height:1.3}
+.bookhead small{display:block;color:var(--text-dim);font-weight:500;margin-top:3px;font-size:11.5px}
+.add-ch-btn{
+  padding:6px 10px;font-size:11px;font-weight:600;
+  background:rgba(139,92,246,.15);
+  border:1px solid rgba(139,92,246,.4);color:#c4b5fd;
+  border-radius:8px;cursor:pointer;flex-shrink:0;
+  transition:all .2s;
+}
+.add-ch-btn:hover{background:rgba(139,92,246,.3);color:#fff}
+
+.ch-row{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 13px;border-top:1px solid rgba(42,42,68,.6);
+  transition:background .2s;position:relative;
+}
+.ch-row:first-of-type{border-top:none}
+.ch-row:hover{background:rgba(139,92,246,.05)}
+.ch-row.done{background:linear-gradient(90deg,rgba(16,185,129,.06),transparent 60%)}
+.ch-row.doing{background:linear-gradient(90deg,rgba(245,158,11,.07),transparent 60%)}
+
+.ch-check{
+  appearance:none;-webkit-appearance:none;
+  width:22px;height:22px;flex-shrink:0;
+  border:2px solid var(--border-2);border-radius:7px;
+  cursor:pointer;display:grid;place-items:center;
+  transition:all .2s;margin:0;padding:0;position:relative;
+}
+.ch-check:hover{border-color:var(--primary)}
+.ch-check.done{
+  background:linear-gradient(135deg,#10b981,#059669);
+  border-color:var(--done);box-shadow:0 0 10px var(--done-glow);
+}
+.ch-check.done::after{content:'✓';color:#fff;font-weight:900;font-size:14px;line-height:1}
+.ch-check.doing{
+  border-color:var(--doing);
+  background:linear-gradient(135deg,rgba(245,158,11,.35),rgba(245,158,11,.15));
+  box-shadow:0 0 10px var(--doing-glow);
+}
+.ch-check.doing::after{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--doing);box-shadow:0 0 8px var(--doing);
+  animation:pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+
+.ch-open{
+  flex:1;min-width:0;text-align:left;
+  background:none;border:none;padding:4px 0;
+  color:inherit;font:inherit;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+}
+.ch-title{
+  flex:1;min-width:0;font-size:13px;line-height:1.45;
+  overflow-wrap:anywhere;color:var(--text);transition:color .2s;
+}
+.ch-title.done{color:var(--done);text-decoration:line-through;text-decoration-color:rgba(16,185,129,.5);text-decoration-thickness:1.5px}
+.ch-title.doing{color:var(--doing);font-weight:600}
+.ch-note-badge{
+  font-size:10px;padding:2px 6px;border-radius:6px;
+  background:rgba(139,92,246,.2);color:#c4b5fd;font-weight:600;
+  flex-shrink:0;
+}
+
+.ch-detail-wrap{animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ch-hero{
+  background:linear-gradient(135deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:16px;
+  padding:18px 16px;margin-bottom:14px;
+}
+.ch-hero .book-name{
+  font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:6px;font-weight:600;
+}
+.ch-hero h2{
+  font-size:19px;font-weight:800;margin:0 0 4px;line-height:1.35;
+  color:var(--text);
+}
+.ch-hero h2.done{color:var(--done)}
+.ch-hero h2.doing{color:var(--doing)}
+
+.status-selector{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin:14px 0 0;
+}
+.status-btn{
+  padding:11px 8px;border-radius:11px;
+  background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-mid);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-family:inherit;
+}
+.status-btn .st-emoji{font-size:17px;line-height:1}
+.status-btn:hover{border-color:var(--border-2);color:var(--text)}
+.status-btn.active.todo-active{background:rgba(100,116,139,.25);border-color:var(--todo);color:#e2e8f0}
+.status-btn.active.doing-active{background:rgba(245,158,11,.18);border-color:var(--doing);color:#fbbf24}
+.status-btn.active.done-active{background:rgba(16,185,129,.18);border-color:var(--done);color:#34d399}
+
+.ch-actions{display:flex;gap:8px;margin-top:12px}
+.ch-actions button{
+  flex:1;padding:10px;border-radius:10px;
+  background:var(--card-2);border:1px solid var(--border);
+  color:var(--text-mid);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.ch-actions button:hover{background:var(--border);color:var(--text)}
+.ch-actions button.danger{
+  background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:#fca5a5;
+}
+.ch-actions button.danger:hover{background:rgba(239,68,68,.25);color:#fff}
+
+.files-section{
+  background:linear-gradient(135deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:16px;
+  padding:16px;
+}
+.files-head{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-bottom:14px;flex-wrap:wrap;
+}
+.files-head h3{
+  font-size:15px;font-weight:700;margin:0;
+  display:flex;align-items:center;gap:8px;
+}
+.note-count{
+  font-size:11px;padding:2px 8px;border-radius:20px;
+  background:rgba(139,92,246,.2);color:#c4b5fd;font-weight:700;
+}
+.import-btn{
+  padding:10px 14px;border-radius:11px;
+  background:linear-gradient(135deg,var(--primary-2),var(--primary));
+  border:none;color:#fff;font-weight:700;font-size:12.5px;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.import-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(139,92,246,.4)}
+
+.empty-files{
+  text-align:center;padding:28px 16px;color:var(--text-dim);font-size:13px;
+}
+.empty-files .em-icon{font-size:32px;margin-bottom:8px;opacity:.7}
+.empty-files p{margin:6px 0 0;line-height:1.5}
+
+.file-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;margin-bottom:8px;
+  background:var(--bg-2);border:1px solid var(--border);
+  border-radius:11px;cursor:pointer;
+  transition:all .18s;
+}
+.file-row:last-child{margin-bottom:0}
+.file-row:hover{
+  border-color:var(--primary);background:rgba(139,92,246,.06);
+  transform:translateX(2px);
+}
+.file-icon{
+  width:38px;height:38px;flex-shrink:0;
+  background:rgba(139,92,246,.15);
+  border:1px solid rgba(139,92,246,.3);
+  border-radius:10px;
+  display:grid;place-items:center;
+  font-size:18px;
+}
+.file-info{flex:1;min-width:0}
+.file-name{
+  font-size:13.5px;font-weight:600;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.file-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
+.file-del{
+  width:32px;height:32px;flex-shrink:0;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+  color:#fca5a5;border-radius:8px;cursor:pointer;
+  display:grid;place-items:center;font-size:13px;
+  transition:all .2s;
+}
+.file-del:hover{background:rgba(239,68,68,.25);color:#fff}
+
+.notes-section{
+  background:linear-gradient(135deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:16px;
+  padding:16px;margin-top:14px;
+}
+.notes-textarea{
+  width:100%;min-height:180px;padding:12px 14px;
+  background:var(--bg-2);border:1px solid var(--border);
+  border-radius:11px;color:var(--text);
+  font-family:'Consolas','Monaco','Courier New',monospace;
+  font-size:13.5px;line-height:1.7;
+  resize:vertical;outline:none;transition:all .2s;
+}
+.notes-textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(139,92,246,.15);
+}
+.notes-textarea::placeholder{color:var(--text-dim)}
+.notes-actions{
+  display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;
+}
+.notes-actions button{
+  flex:1;min-width:130px;padding:11px 12px;
+  border-radius:10px;font-weight:700;font-size:12.5px;
+  font-family:inherit;cursor:pointer;transition:all .2s;
+  border:1px solid var(--border);
+  background:var(--card-2);color:var(--text-mid);
+}
+.notes-actions button:hover{background:var(--border);color:var(--text)}
+.notes-actions .btn-primary{
+  background:linear-gradient(135deg,var(--primary-2),var(--primary));
+  border:none;color:#fff;
+}
+.notes-actions .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(139,92,246,.4)}
+.notes-actions .btn-success{
+  background:linear-gradient(135deg,#059669,#10b981);
+  border:none;color:#fff;
+}
+.notes-actions .btn-success:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.4)}
+.notes-hint{
+  font-size:11px;color:var(--text-dim);font-weight:500;
+}
+
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;padding:12px 22px;border-radius:12px;
+  font-size:13px;font-weight:600;z-index:2000;
+  box-shadow:0 8px 24px rgba(16,185,129,.4);
+  transition:transform .35s ease;
+  max-width:90vw;text-align:center;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+.toolbar{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;
+}
+.toolbar button{
+  padding:11px;border-radius:11px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text-mid);font-size:12.5px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.toolbar button:hover{background:var(--card-2);color:var(--text);border-color:var(--primary)}
+
+@media(min-width:600px){
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .subject-grid{grid-template-columns:1fr 1fr}
+  .toolbar{grid-template-columns:repeat(4,1fr)}
+  .hero h1{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+
+<script>
+/* ================== INITIAL DATA ================== */
+const initialData=[
+{subject:"इतिहास",book:"भारतीय इतिहास के कुछ विषय भाग 1, 2, 3",chapters:[
+["ईंटें, मनके तथा अस्थियाँ: हड़प्पा सभ्यता","done"],
+["राजा, किसान और नगर: आरंभिक राज्य और अर्थव्यवस्थाएँ","done"],
+["बंधुत्व, जाति तथा वर्ग: आरंभिक समाज","done"],
+["विचारक, विश्वास और इमारतें: सांस्कृतिक विकास","done"],
+["यात्रियों के नजरिए: समाज के बारे में उनकी समझ","doing"],
+["भक्ति-सूफी परंपराएँ","todo"],
+["एक साम्राज्य की राजधानी: विजयनगर","todo"],
+["किसान, जमींदार और राज्य","todo"],
+["उपनिवेशवाद और देहात","todo"],
+["विद्रोही और राज: 1857 का आंदोलन","todo"],
+["महात्मा गाँधी और राष्ट्रीय आंदोलन","todo"],
+["संविधान का निर्माण","todo"],
+["मानचित्र कार्य (Map Work)","todo"]
+]},
+{subject:"राजनीति विज्ञान",book:"समकालीन विश्व राजनीति",chapters:[
+["दो-ध्रुवीयता का अंत","done"],
+["सत्ता के समकालीन केंद्र","doing"],
+["समकालीन दक्षिण एशिया","todo"],
+["अंतर्राष्ट्रीय संगठन","todo"],
+["समकालीन विश्व में सुरक्षा","todo"],
+["पर्यावरण और प्राकृतिक संसाधन","todo"],
+["वैश्वीकरण","todo"]
+]},
+{subject:"राजनीति विज्ञान",book:"स्वतंत्र भारत में राजनीति",chapters:[
+["राष्ट्र-निर्माण की चुनौतियाँ","done"],
+["एक दल के प्रभुत्व का दौर","done"],
+["नियोजित विकास की राजनीति","done"],
+["भारत के विदेश संबंध","done"],
+["कांग्रेस प्रणाली: चुनौतियाँ और पुनर्स्थापना","todo"],
+["लोकतांत्रिक व्यवस्था का संकट","todo"],
+["क्षेत्रीय आकांक्षाएँ","todo"],
+["भारतीय राजनीति: नए बदलाव","todo"]
+]},
+{subject:"हिन्दी अनिवार्य",book:"आरोह भाग 2 — काव्य",chapters:[
+["आत्म-परिचय, एक गीत — हरिवंश राय बच्चन","done"],
+["पतंग — आलोक धन्वा","done"],
+["कविता के बहाने, बात सीधी थी पर — कुँवर नारायण","done"],
+["कैमरे में बंद अपाहिज — रघुवीर सहाय","done"],
+["उषा — शमशेर बहादुर सिंह","done"],
+["बादल राग — निराला","todo"],
+["कवितावली, लक्ष्मण-मूर्च्छा और राम का विलाप — तुलसीदास","todo"],
+["रुबाइयाँ, गज़ल — फ़िराक़ गोरखपुरी","todo"],
+["छोटा मेरा खेत, बगुलों के पंख — उमाशंकर जोशी","todo"]
+]},
+{subject:"हिन्दी अनिवार्य",book:"आरोह भाग 2 — गद्य",chapters:[
+["भक्तिन — महादेवी वर्मा","done"],
+["बाज़ार दर्शन — जैनेंद्र कुमार","done"],
+["काले मेघा पानी दे — धर्मवीर भारती","done"],
+["पहेली बूढ़ी काकी — राजेंद्र यादव","todo"],
+["यथार्थवाद और छायावाद — नंददुलारे वाजपेयी","todo"],
+["शिरीष के फूल — हजारी प्रसाद द्विवेदी","todo"],
+["पहलवान की ढोलक — फणीश्वरनाथ रेणु","todo"],
+["चार्ली चैप्लिन यानी हम सब — विष्णु खरे","todo"]
+]},
+{subject:"हिन्दी अनिवार्य",book:"वितान भाग 2",chapters:[
+["सिल्वर वैडिंग — मनोहर श्याम जोशी","todo"],
+["जूझ — आनंद यादव","todo"],
+["अतीत में दबे पाँव — ओम थानवी","todo"],
+["डायरी के पन्ने — ऐन फ्रैंक","todo"]
+]},
+{subject:"हिन्दी अनिवार्य",book:"अभिव्यक्ति एवं माध्यम",chapters:[
+["विभिन्न माध्यमों के लिए लेखन","todo"],
+["विशेष लेखन-स्वरूप और प्रकार","todo"],
+["कहानी का नाट्य रूपांतरण / रेडियो नाटक","todo"]
+]},
+{subject:"हिन्दी साहित्य",book:"अंतरा भाग 2 — काव्य",chapters:[
+["कार्नेलिया का गीत — जयशंकर प्रसाद","done"],
+["देवसेना का गीत — जयशंकर प्रसाद","done"],
+["सरोज-स्मृति — सूर्यकांत त्रिपाठी निराला","done"],
+["यह दीप अकेला, मैंने देखा एक बूँद — अज्ञेय","done"],
+["बनारस, दिशा — केदारनाथ सिंह","todo"],
+["सत्य, एक कम — विष्णु खरे","todo"],
+["तोड़ो, वसंत आया — रघुवीर सहाय","todo"],
+["भरत-राम का प्रेम, पद — तुलसीदास","todo"],
+["बारहमासा — जायसी","todo"],
+["पद — विद्यापति","todo"],
+["रामचंद्रचंद्रिका — केशवदास","todo"],
+["कवित्त/सवैया — घनानंद","todo"]
+]},
+{subject:"हिन्दी साहित्य",book:"अंतरा भाग 2 — गद्य",chapters:[
+["प्रेमघन की स्मृति छाया — रामचंद्र शुक्ल","todo"],
+["सुमिरिनी के मनके — चंद्रधर शर्मा गुलेरी","todo"],
+["कच्चा चिट्ठा — ब्रजमोहन व्यास","todo"],
+["संवदिया — फणीश्वरनाथ रेणु","todo"],
+["गांधी, नेहरू और यास्सर अराफात — भीष्म साहनी","todo"],
+["शेर, पहचान, चार हाथ, साझा — असगर वजाहत","todo"],
+["जहाँ कोई वापसी नहीं — निर्मल वर्मा","todo"],
+["यथास्मै रोचते विश्वम् — राम विलास शर्मा","todo"],
+["दूसरा देवदास — ममता कालिया","todo"],
+["कुटज — हजारी प्रसाद द्विवेदी","todo"]
+]},
+{subject:"हिन्दी साहित्य",book:"अंतराल भाग 2",chapters:[
+["सूरदास की झोपड़ी","todo"]
+]},
+{subject:"अंग्रेज़ी",book:"Flamingo — Prose",chapters:[
+["The Last Lesson","done"],
+["Lost Spring","done"],
+["Deep Water","done"],
+["The Rattrap","done"],
+["Indigo","done"],
+["Poets and Pancakes","doing"],
+["The Interview","todo"],
+["Going Places","todo"]
+]},
+{subject:"अंग्रेज़ी",book:"Flamingo — Poetry",chapters:[
+["My Mother at Sixty-Six","done"],
+["An Elementary School Classroom in a Slum","todo"],
+["Keeping Quiet","todo"],
+["A Thing of Beauty","todo"],
+["A Roadside Stand","todo"],
+["Aunt Jennifer's Tigers","todo"]
+]},
+{subject:"अंग्रेज़ी",book:"Vistas",chapters:[
+["The Third Level","todo"],
+["The Tiger King","todo"],
+["Journey to the End of the Earth","todo"],
+["The Enemy","todo"],
+["Should Wizard Hit Mommy?","todo"],
+["On the Face of It","todo"],
+["Evans Tries an O-Level","todo"],
+["Memories of Childhood","todo"]
+]}
+];
+
+/* ================== STORAGE ================== */
+const STORAGE_KEY = "sachinStudyApp12v2";
+
+function prepare(raw){
+  return raw.map((b,i)=>({
+    id: b.id || "book"+i,
+    subject: b.subject,
+    book: b.book,
+    chapters: b.chapters.map((c,j)=>{
+      const obj = Array.isArray(c) ? {title:c[0], status:c[1]} : c;
+      const files = obj.files || obj.notes || [];
+      return {
+        id: obj.id || "ch"+i+"_"+j,
+        title: obj.title,
+        status: obj.status || "todo",
+        noteText: obj.noteText || "",
+        files: files.map((f,k)=>({
+          id: f.id || "f"+i+"_"+j+"_"+k,
+          name: f.name || f.title || "file.txt",
+          content: f.content || "",
+          size: f.size || (f.content ? f.content.length : 0),
+          date: f.date || new Date().toISOString()
+        }))
+      };
+    })
+  }));
+}
+
+function loadData(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(Array.isArray(parsed)) return prepare(parsed);
+    }
+  }catch(e){}
+  return prepare(initialData);
+}
+
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return true;
+  }catch(e){
+    alert("⚠️ Storage भर गया! कृपया कुछ files हटाएँ या बैकअप लें।");
+    return false;
+  }
+}
+
+let data = loadData();
+
+/* ================== HELPERS ================== */
+function allChapters(){return data.flatMap(b=>b.chapters)}
+function findBook(id){return data.find(b=>b.id===id)}
+function findChapter(bookId, chId){
+  const b = findBook(bookId);
+  return b ? b.chapters.find(c=>c.id===chId) : null;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function escAttr(s){return esc(s)}
+function fmtDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString("hi-IN",{day:"2-digit",month:"short",year:"numeric"});
+  }catch(e){return ""}
+}
+function fmtSize(bytes){
+  if(!bytes) return "0 B";
+  if(bytes < 1024) return bytes + " B";
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+  return (bytes/1024/1024).toFixed(2) + " MB";
+}
+function subjectStats(subject){
+  const subs = data.filter(b=>b.subject===subject);
+  const all = subs.flatMap(b=>b.chapters);
+  const done = all.filter(c=>c.status==="done").length;
+  const doing = all.filter(c=>c.status==="doing").length;
+  const todo = all.filter(c=>c.status==="todo").length;
+  return {total:all.length, done, doing, todo, percent: all.length ? Math.round(done/all.length*100) : 0};
+}
+function subjectEmoji(s){
+  if(s.includes("इतिहास")) return "🏛️";
+  if(s.includes("राजनीति")) return "⚖️";
+  if(s.includes("हिन्दी अनिवार्य")) return "📖";
+  if(s.includes("हिन्दी साहित्य")) return "📚";
+  if(s.includes("अंग्रेज़ी")) return "🔤";
+  return "📘";
+}
+
+/* ================== TOAST ================== */
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove("show"), 2500);
+}
+
+/* ================== ROUTING ================== */
+let state = {view:"home"};
+
+function route(){
+  const hash = location.hash.slice(1) || "/";
+  const parts = hash.split("/").filter(Boolean);
+  if(parts.length === 0){
+    state = {view:"home"};
+  } else if(parts[0]==="s" && parts[1]){
+    state = {view:"subject", subject: decodeURIComponent(parts[1])};
+  } else if(parts[0]==="c" && parts[1] && parts[2]){
+    state = {view:"chapter", bookId: parts[1], chapterId: parts[2]};
+  } else {
+    state = {view:"home"};
+  }
+  render();
+}
+
+function goHome(){ location.hash = "/"; }
+function goSubject(name){ location.hash = "/s/" + encodeURIComponent(name); }
+function goChapter(bookId, chId){ location.hash = "/c/" + bookId + "/" + chId; }
+
+window.addEventListener("hashchange", route);
+window.addEventListener("DOMContentLoaded", route);
+
+/* ================== TOPBAR ================== */
+function renderTopbar(){
+  if(state.view === "home"){
+    return `<div class="topbar"><div class="topbar-inner">
+      <div style="width:38px"></div>
+      <div style="flex:1;text-align:center">
+        <h1 class="app-title">📚 Sachin Study</h1>
+        <div class="app-sub">RBSE कक्षा 12</div>
+      </div>
+      <div style="width:38px"></div>
+    </div></div>`;
+  }
+  const backLabel = state.view === "chapter" ? "विषय" : "Home";
+  return `<div class="topbar"><div class="topbar-inner">
+    <button class="back-btn" onclick="history.back()">‹</button>
+    <div style="flex:1;text-align:center">
+      <h1 class="app-title">${esc(state.view==="subject"?state.subject:"Chapter")}</h1>
+      <div class="app-sub">${esc(backLabel)}</div>
+    </div>
+    <div style="width:38px"></div>
+  </div></div>`;
+}
+
+/* ================== HOME ================== */
+function renderHome(){
+  const subjects = [...new Set(data.map(b=>b.subject))];
+  const all = allChapters();
+  const done = all.filter(c=>c.status==="done").length;
+  const doing = all.filter(c=>c.status==="doing").length;
+  const todo = all.filter(c=>c.status==="todo").length;
+  const total = all.length;
+  const percent = total ? Math.round(done/total*100) : 0;
+
+  let subjectCards = "";
+  subjects.forEach(subj=>{
+    const st = subjectStats(subj);
+    subjectCards += `<button class="subject-card" onclick="goSubject('${escAttr(subj)}')">
+      <div class="subj-head">
+        <div class="subj-icon">${subjectEmoji(subj)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="subj-name">${esc(subj)}</div>
+          <div class="subj-meta">${st.total} अध्याय · ${st.percent}% पूरे</div>
+        </div>
+      </div>
+      <div class="subj-progress"><div class="subj-progress-bar" style="width:${st.percent}%"></div></div>
+      <div class="subj-stats">
+        <span class="c-done">✅ <b>${st.done}</b></span>
+        <span class="c-doing">🔄 <b>${st.doing}</b></span>
+        <span>⏳ <b>${st.todo}</b></span>
+      </div>
+    </button>`;
+  });
+
+  return `${renderTopbar()}
+  <div class="hero">
+    <h1>नमस्ते, Sachin 👋</h1>
+    <p>अपनी पढ़ाई track करो, files पढ़ो</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat total"><strong>${total}</strong><span>कुल</span></div>
+    <div class="stat done-stat"><strong>${done}</strong><span>पूरे</span></div>
+    <div class="stat doing-stat"><strong>${doing}</strong><span>चल रहे</span></div>
+    <div class="stat todo-stat"><strong>${todo}</strong><span>बाकी</span></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress"><div id="bar" style="width:${percent}%"></div></div>
+    <p class="summary">🎯 ${percent}% पूरा — ${done}/${total} अध्याय</p>
+  </div>
+
+  <div class="toolbar">
+    <button onclick="exportTXT()">⬇ TXT Export</button>
+    <button onclick="backupJSON()">💾 बैकअप</button>
+    <button onclick="importJSON()">📂 बैकअप खोलें</button>
+    <button onclick="if(confirm('पूरा डेटा reset करना है? पहले बैकअप कर लो!')){localStorage.removeItem('${STORAGE_KEY}');data=prepare(initialData);render();}">🔄 Reset</button>
+  </div>
+
+  <div class="section-title">📚 विषय</div>
+  <div class="subject-grid">${subjectCards}</div>`;
+}
+
+/* ================== SUBJECT VIEW ================== */
+function renderSubjectView(){
+  const subject = state.subject;
+  const books = data.filter(b=>b.subject===subject);
+  const st = subjectStats(subject);
+
+  let bookHtml = "";
+  books.forEach(b=>{
+    const done = b.chapters.filter(c=>c.status==="done").length;
+    let chHtml = "";
+    if(b.chapters.length === 0){
+      chHtml = `<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:13px">कोई अध्याय नहीं। जोड़ें।</div>`;
+    }
+    b.chapters.forEach(c=>{
+      const doingClass = c.status==="doing" ? "doing" : "";
+      const doneClass = c.status==="done" ? "done" : "";
+      const fileBadge = (c.files && c.files.length) ? `<span class="ch-note-badge">📁 ${c.files.length}</span>` : "";
+      const noteBadge = (c.noteText && c.noteText.trim()) ? `<span class="ch-note-badge" style="background:rgba(16,185,129,.2);color:#34d399">📝</span>` : "";
+      chHtml += `<div class="ch-row ${doneClass} ${doingClass}">
+        <input type="checkbox" class="ch-check ${doneClass} ${doingClass}"
+          ${c.status==="done"?"checked":""}
+          data-check-book="${escAttr(b.id)}" data-check-ch="${escAttr(c.id)}">
+        <button class="ch-open" onclick="goChapter('${escAttr(b.id)}','${escAttr(c.id)}')">
+          <span class="ch-title ${doneClass} ${doingClass}">${esc(c.title)}</span>
+          ${noteBadge}${fileBadge}
+        </button>
+      </div>`;
+    });
+    bookHtml += `<section class="book">
+      <div class="bookhead">
+        <div class="bookhead-info">
+          <div class="bookhead-title">${esc(b.book)}</div>
+          <small>${done}/${b.chapters.length} पूरे</small>
+        </div>
+        <button class="add-ch-btn" data-add-book="${escAttr(b.id)}">＋ अध्याय</button>
+      </div>
+      ${chHtml}
+    </section>`;
+  });
+
+  return `${renderTopbar()}
+  <div class="progress-wrap">
+    <div class="progress"><div id="subbar" style="width:${st.percent}%"></div></div>
+    <p class="summary">${subjectEmoji(subject)} ${esc(subject)} — ${st.done}/${st.total} पूरे · ${st.doing} चल रहे · ${st.todo} बाकी</p>
+  </div>
+  ${bookHtml}`;
+}
+
+/* ================== CHAPTER VIEW ================== */
+function renderChapterView(){
+  const book = findBook(state.bookId);
+  if(!book) return `<div style="padding:40px;text-align:center">अध्याय नहीं मिला</div>`;
+  const ch = book.chapters.find(c=>c.id===state.chapterId);
+  if(!ch) return `<div style="padding:40px;text-align:center">अध्याय नहीं मिला</div>`;
+
+  const files = ch.files || [];
+  let filesHtml = "";
+  if(files.length === 0){
+    filesHtml = `<div class="empty-files">
+      <div class="em-icon">📁</div>
+      <p>अभी कोई file नहीं है।<br>TXT file import करें।</p>
+    </div>`;
+  } else {
+    files.forEach(f=>{
+      filesHtml += `<div class="file-row" data-open-file="${escAttr(f.id)}">
+        <div class="file-icon">📄</div>
+        <div class="file-info">
+          <div class="file-name">${esc(f.name)}</div>
+          <div class="file-meta">${fmtSize(f.size)} · ${fmtDate(f.date)}</div>
+        </div>
+        <button class="file-del" data-del-file="${escAttr(f.id)}" title="हटाएँ">🗑</button>
+      </div>`;
+    });
+  }
+
+  return `${renderTopbar()}
+  <div class="ch-detail-wrap">
+    <div class="ch-hero">
+      <div class="book-name">${esc(book.subject)} · ${esc(book.book)}</div>
+      <h2 class="${ch.status}">${esc(ch.title)}</h2>
+      <div class="status-selector">
+        <button class="status-btn ${ch.status==="todo"?"active todo-active":""}" data-set-status="todo">
+          <span class="st-emoji">⏳</span>बाकी
+        </button>
+        <button class="status-btn ${ch.status==="doing"?"active doing-active":""}" data-set-status="doing">
+          <span class="st-emoji">🔄</span>चल रहा
+        </button>
+        <button class="status-btn ${ch.status==="done"?"active done-active":""}" data-set-status="done">
+          <span class="st-emoji">✅</span>पूरा
+        </button>
+      </div>
+      <div class="ch-actions">
+        <button data-rename-ch="1">✏️ नाम बदलें</button>
+        <button class="danger" data-delete-ch="1">🗑 हटाएँ</button>
+      </div>
+    </div>
+
+    <div class="files-section">
+      <div class="files-head">
+        <h3>📁 Files <span class="note-count">${files.length}</span></h3>
+        <button class="import-btn" data-import-file="1">📥 TXT Import</button>
+      </div>
+      ${filesHtml}
+    </div>
+
+    <div class="notes-section">
+      <div class="files-head">
+        <h3>📝 अपने Notes</h3>
+        <span class="notes-hint">✓ Auto-save</span>
+      </div>
+      <textarea class="notes-textarea" data-note-input="1"
+        placeholder="यहाँ अपने notes paste करें या लिखें...&#10;&#10;फिर नीचे '📥 Create TXT' दबाएँ — file सीधे Downloads में save हो जाएगी।">${esc(ch.noteText || "")}</textarea>
+      <div class="notes-actions">
+        <button class="btn-primary" data-create-txt="1">📥 Create TXT (Download)</button>
+        <button class="btn-success" data-save-note-file="1">💾 Save to Files</button>
+        <button data-clear-note="1">🗑 Clear</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ================== MAIN RENDER ================== */
+function render(){
+  const app = document.getElementById("app");
+  if(state.view === "home") app.innerHTML = renderHome();
+  else if(state.view === "subject") app.innerHTML = renderSubjectView();
+  else if(state.view === "chapter") app.innerHTML = renderChapterView();
+  window.scrollTo(0,0);
+}
+
+/* ================== FILE VIEWER ================== */
+function openFileInNativeViewer(file){
+  const safeName = String(file.name || "file.txt")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+  const safeContent = String(file.content || "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+  const html = `<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>${safeName}</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#0a0a14;color:#e8e8f2;min-height:100vh}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6}
+.topbar{position:sticky;top:0;padding:10px 14px;background:rgba(10,10,20,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(139,92,246,.25);display:flex;align-items:center;gap:10px;z-index:10}
+.topbar-icon{width:30px;height:30px;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);border-radius:8px;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;color:#e8e8f2;line-height:1.2}
+.topbar-meta{font-size:11px;color:#8a8aa8;margin-top:1px;font-weight:400}
+.content{padding:16px;white-space:pre-wrap;word-break:break-word;font-family:'Consolas','Monaco','Courier New',monospace;font-size:14px;line-height:1.7;color:#d8dde8;margin:0;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-icon">📄</div>
+  <div style="flex:1;min-width:0">
+    <div class="topbar-title">${safeName}</div>
+    <div class="topbar-meta">${fmtSize(file.size)} · ${fmtDate(file.date)}</div>
+  </div>
+</div>
+<pre class="content">${safeContent}</pre>
+</body>
+</html>`;
+
+  const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+
+  const win = window.open(url, "_blank");
+  if(!win || win.closed || typeof win.closed === "undefined"){
+    const a = document.createElement("a");
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+}
+
+/* ================== EVENTS ================== */
+document.addEventListener("change", e=>{
+  const cb = e.target.closest(".ch-check");
+  if(cb && cb.dataset.checkBook && cb.dataset.checkCh){
+    const ch = findChapter(cb.dataset.checkBook, cb.dataset.checkCh);
+    if(!ch) return;
+    ch.status = cb.checked ? "done" : "todo";
+    saveData();
+    render();
+  }
+});
+
+let noteSaveTimer;
+document.addEventListener("input", e=>{
+  if(e.target.matches("[data-note-input]")){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    ch.noteText = e.target.value;
+    clearTimeout(noteSaveTimer);
+    noteSaveTimer = setTimeout(()=>{ saveData(); }, 600);
+  }
+});
+
+document.addEventListener("click", e=>{
+  const statusBtn = e.target.closest("[data-set-status]");
+  if(statusBtn){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    ch.status = statusBtn.dataset.setStatus;
+    saveData();
+    render();
+    return;
+  }
+
+  const impBtn = e.target.closest("[data-import-file]");
+  if(impBtn){ openFileImporter(); return; }
+
+  const createTxt = e.target.closest("[data-create-txt]");
+  if(createTxt){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    const text = (ch.noteText || "").trim();
+    if(!text){ toast("⚠️ पहले notes लिखें या paste करें"); return; }
+    const baseName = (ch.title || "notes").replace(/[\\/:*?"<>|\n\r]/g,"_").trim().slice(0,60) || "notes";
+    const stamp = new Date().toISOString().slice(0,10);
+    downloadFile(ch.noteText, `${baseName}_${stamp}.txt`, "text/plain;charset=utf-8");
+    toast("✅ TXT file Downloads में save हो गई");
+    return;
+  }
+
+  const saveNoteFile = e.target.closest("[data-save-note-file]");
+  if(saveNoteFile){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    const text = (ch.noteText || "").trim();
+    if(!text){ toast("⚠️ पहले notes लिखें"); return; }
+    const baseName = (ch.title || "notes").replace(/[\\/:*?"<>|\n\r]/g,"_").trim().slice(0,60) || "notes";
+    const fname = `${baseName}_${new Date().toISOString().slice(0,10)}.txt`;
+    ch.files.push({
+      id: "f" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
+      name: fname,
+      content: ch.noteText,
+      size: ch.noteText.length,
+      date: new Date().toISOString()
+    });
+    saveData();
+    render();
+    toast("✅ File में save हो गई");
+    return;
+  }
+
+  const clearNote = e.target.closest("[data-clear-note]");
+  if(clearNote){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    if(!ch.noteText || !ch.noteText.trim()){ toast("Notes खाली हैं"); return; }
+    if(!confirm("Notes clear करें? (पहले 'Create TXT' से download कर लें)")) return;
+    ch.noteText = "";
+    saveData();
+    render();
+    toast("🗑 Notes clear");
+    return;
+  }
+
+  const delFile = e.target.closest("[data-del-file]");
+  if(delFile){
+    e.stopPropagation();
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    const file = ch.files.find(f=>f.id===delFile.dataset.delFile);
+    if(!file) return;
+    if(!confirm(`"${file.name}" हटाना है?`)) return;
+    ch.files = ch.files.filter(f=>f.id!==file.id);
+    saveData();
+    render();
+    toast("🗑 File हटाई");
+    return;
+  }
+
+  const fileRow = e.target.closest("[data-open-file]");
+  if(fileRow){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    const file = ch.files.find(f=>f.id===fileRow.dataset.openFile);
+    if(!file) return;
+    openFileInNativeViewer(file);
+    return;
+  }
+
+  const renameBtn = e.target.closest("[data-rename-ch]");
+  if(renameBtn){
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+    const newTitle = prompt("नया नाम:", ch.title);
+    if(newTitle && newTitle.trim()){
+      ch.title = newTitle.trim();
+      saveData();
+      render();
+      toast("✅ नाम बदला");
+    }
+    return;
+  }
+
+  const delCh = e.target.closest("[data-delete-ch]");
+  if(delCh){
+    if(!confirm("यह अध्याय हटाना है? इसकी files और notes भी हट जाएंगे।")) return;
+    const b = findBook(state.bookId);
+    if(!b) return;
+    b.chapters = b.chapters.filter(c=>c.id !== state.chapterId);
+    saveData();
+    goSubject(b.subject);
+    toast("🗑 अध्याय हटाया");
+    return;
+  }
+
+  const addCh = e.target.closest("[data-add-book]");
+  if(addCh){
+    const b = findBook(addCh.dataset.addBook);
+    if(!b) return;
+    const title = prompt("नए अध्याय का नाम:");
+    if(!title || !title.trim()) return;
+    b.chapters.push({
+      id: "ch" + Date.now() + Math.random().toString(36).slice(2,6),
+      title: title.trim(),
+      status: "todo",
+      noteText: "",
+      files: []
+    });
+    saveData();
+    render();
+    toast("✅ अध्याय जोड़ा");
+    return;
+  }
+});
+
+/* ================== FILE IMPORT ================== */
+const MAX_FILE_SIZE = 800 * 1024;
+
+function openFileImporter(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".txt,text/plain";
+  input.multiple = true;
+  input.onchange = async ()=>{
+    const files = Array.from(input.files || []);
+    if(files.length === 0) return;
+    const ch = findChapter(state.bookId, state.chapterId);
+    if(!ch) return;
+
+    let imported = 0, skipped = 0;
+    for(const file of files){
+      if(file.size > MAX_FILE_SIZE){ skipped++; continue; }
+      try{
+        const content = await file.text();
+        ch.files.push({
+          id: "f" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
+          name: file.name,
+          content: content,
+          size: file.size,
+          date: new Date().toISOString()
+        });
+        imported++;
+      }catch(err){ skipped++; }
+    }
+
+    if(imported > 0){
+      saveData();
+      render();
+      let msg = `✅ ${imported} file import हुई`;
+      if(skipped > 0) msg += ` · ${skipped} छोड़ी`;
+      toast(msg);
+    } else if(skipped > 0){
+      alert("⚠️ सभी files बहुत बड़ी थीं (max 800 KB)।");
+    }
+  };
+  input.click();
+}
+
+/* ================== EXPORT / BACKUP ================== */
+function downloadFile(content, name, type){
+  const blob = new Blob(["\ufeff"+content], {type: type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+function exportTXT(){
+  const all = allChapters();
+  const done = all.filter(c=>c.status==="done").length;
+  const doing = all.filter(c=>c.status==="doing").length;
+  const todo = all.filter(c=>c.status==="todo").length;
+  const percent = all.length ? Math.round(done/all.length*100) : 0;
+  const subjects = [...new Set(data.map(b=>b.subject))];
+
+  const lines = [];
+  lines.push("═══════════════════════════════════════════");
+  lines.push("  SACHIN STUDY TRACKER — RBSE CLASS 12");
+  lines.push("═══════════════════════════════════════════");
+  lines.push("Export Date: " + new Date().toLocaleString("hi-IN"));
+  lines.push("");
+  lines.push("📊 सारांश");
+  lines.push("───────────────────────────────────────────");
+  lines.push("  कुल अध्याय:   " + all.length);
+  lines.push("  ✅ पूरे:       " + done);
+  lines.push("  🔄 चल रहे:     " + doing);
+  lines.push("  ⏳ बाकी:       " + todo);
+  lines.push("  प्रगति:       " + percent + "%");
+  lines.push("");
+  lines.push("विषयवार:");
+  subjects.forEach(s=>{
+    const st = subjectStats(s);
+    lines.push(`  • ${s}: ${st.done}/${st.total} पूरे, ${st.doing} चल रहे, ${st.todo} बाकी`);
+  });
+  lines.push("");
+
+  subjects.forEach(subj=>{
+    lines.push("");
+    lines.push("═══════════════════════════════════════════");
+    lines.push("  📚 " + subj);
+    lines.push("═══════════════════════════════════════════");
+    data.filter(b=>b.subject===subj).forEach(b=>{
+      lines.push("");
+      lines.push("── " + b.book + " ──");
+      b.chapters.forEach((c, i)=>{
+        const st = c.status==="done" ? "✅ पूरा"
+                 : c.status==="doing" ? "🔄 चल रहा"
+                 : "⏳ बाकी";
+        lines.push(`  ${String(i+1).padStart(2,"0")}. [${st}] ${c.title}`);
+        if(c.noteText && c.noteText.trim()){
+          lines.push(`        📝 Personal Notes:`);
+          c.noteText.trim().split("\n").forEach(l=>{
+            lines.push("           " + l);
+          });
+        }
+        if(c.files && c.files.length){
+          lines.push(`        📁 ${c.files.length} file(s):`);
+          c.files.forEach(f=>{
+            lines.push(`           ▸ ${f.name} (${fmtSize(f.size)}, ${fmtDate(f.date)})`);
+            const content = String(f.content || "").trim();
+            if(content){
+              lines.push(`           ─────────────────────────`);
+              content.split("\n").forEach(l=>{
+                lines.push("           " + l);
+              });
+              lines.push(`           ─────────────────────────`);
+            }
+          });
+        }
+      });
+    });
+  });
+
+  lines.push("");
+  lines.push("═══════════════════════════════════════════");
+  lines.push("  — End of Report —");
+  lines.push("═══════════════════════════════════════════");
+
+  downloadFile(lines.join("\n"), "sachin-study-progress.txt", "text/plain;charset=utf-8");
+  toast("⬇ TXT export हो गया");
+}
+
+function backupJSON(){
+  downloadFile(JSON.stringify(data, null, 2), "sachin-study-backup.json", "application/json;charset=utf-8");
+  toast("💾 बैकअप डाउनलोड हो गया");
+}
+
+function importJSON(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+  input.onchange = async ()=>{
+    const file = input.files[0];
+    if(!file) return;
+    try{
+      const parsed = JSON.parse(await file.text());
+      if(!Array.isArray(parsed)) throw new Error("invalid");
+      if(!confirm("इससे वर्तमान डेटा बदल जाएगा। जारी रखें?")) return;
+      data = prepare(parsed);
+      saveData();
+      render();
+      toast("✅ बैकअप खुल गया");
+    }catch(err){
+      alert("यह सही backup JSON नहीं है।");
+    }
+  };
+  input.click();
+}
+</script>
+
+<!-- 👇 notifications.js को जोड़ने वाली लाइन — इसे न हटाएँ -->
+<script src="notifications.js"></script>
+</body>
+</html>
