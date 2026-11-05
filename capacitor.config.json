@@ -1,0 +1,10 @@
+{
+  "appId": "com.sachin.study",
+  "appName": "Sachin Study",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#8b5cf6"
+    }
+  }
+}
